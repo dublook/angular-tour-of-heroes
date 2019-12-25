@@ -1,7 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { ActivatedRoute, Params } from '@angular/router';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Hero } from './hero';
 import { HeroService } from './hero.service';
+import { HeroViewService } from './hero-view.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'my-hero-detail',
@@ -9,34 +11,42 @@ import { HeroService } from './hero.service';
   styleUrls: ['./hero-detail.component.css']
 })
 export class HeroDetailComponent implements OnInit {
-  @Input() hero: Hero;
   @Output() close = new EventEmitter();
   error: any;
   navigated = false; // true if navigated here
 
+  selectedHeroId$ = this.heroViewService.selectedHeroId$;
+
+  selectedHero$ = this.heroViewService.selectedHero$.pipe(
+    map((hero) => hero ? hero : new Hero()), // 指定なしの場合は、新規作成のための空のHeroを作る
+  );
+
   constructor(
-    private heroService: HeroService,
+    private heroApi: HeroService,
+    private heroViewService: HeroViewService,
     private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.route.params.forEach((params: Params) => {
-      if (params['id'] !== undefined) {
-        const id = +params['id'];
-        this.navigated = true;
-        this.heroService.getHero(id).subscribe(hero => (this.hero = hero));
-      } else {
-        this.navigated = false;
-        this.hero = new Hero();
-      }
-    });
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.navigated = true;
+      this.heroViewService.selectHero(+id)
+    } else {
+      this.navigated = false;
+      this.heroViewService.selectHero(null)
+    }
   }
 
-  save(): void {
-    this.heroService.save(this.hero).subscribe(hero => {
-      this.hero = hero; // saved hero, w/ id if new
-      this.goBack(hero);
-    }, error => (this.error = error)); // TODO: Display error message
+  save(hero: Hero): void {
+    this.heroApi.save(hero)
+      .subscribe(
+        (savedHero) => {
+          this.heroViewService.selectHero(savedHero ? savedHero.id : null);
+          this.goBack(savedHero);
+        },
+        error => (this.error = error)  // TODO: Display error message
+      );
   }
 
   goBack(savedHero: Hero = null): void {

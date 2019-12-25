@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { Hero } from './hero';
-import { HeroService } from './hero.service';
+import { HeroViewService } from './hero-view.service';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'my-dashboard',
@@ -10,16 +11,19 @@ import { HeroService } from './hero.service';
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  heroes: Hero[] = [];
+
+  heroes$ = this.heroViewService.heroes$.pipe(
+    map((heroes) => [...heroes].reverse().slice(0, 4))
+  );
 
   constructor(
     private router: Router,
-    private heroService: HeroService) {
+    private heroViewService: HeroViewService,
+  ) {
   }
 
   ngOnInit(): void {
-    this.heroService.getHeroes()
-      .subscribe(heroes => this.heroes = heroes.slice(1, 5));
+    // 初期化処理を呼ばない!
   }
 
   gotoDetail(hero: Hero): void {
