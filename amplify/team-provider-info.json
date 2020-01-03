@@ -1,0 +1,15 @@
+{
+    "dev": {
+        "awscloudformation": {
+            "AuthRoleName": "amplify-heroes-qiita-dev-210115-authRole",
+            "UnauthRoleArn": "arn:aws:iam::605286198601:role/amplify-heroes-qiita-dev-210115-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::605286198601:role/amplify-heroes-qiita-dev-210115-authRole",
+            "Region": "ap-northeast-1",
+            "DeploymentBucketName": "amplify-heroes-qiita-dev-210115-deployment",
+            "UnauthRoleName": "amplify-heroes-qiita-dev-210115-unauthRole",
+            "StackName": "amplify-heroes-qiita-dev-210115",
+            "StackId": "arn:aws:cloudformation:ap-northeast-1:605286198601:stack/amplify-heroes-qiita-dev-210115/d3ca8ec0-2e20-11ea-a257-0a6f9c86115e",
+            "AmplifyAppId": "d3golvx2xn3qem"
+        }
+    }
+}
